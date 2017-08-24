@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="AdvancedColorPicker.Views.ColorPickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewModels="clr-namespace:AdvancedColorPicker.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" x:Name="Root">
+    <UserControl.DataContext>
+        <viewModels:ColorPickerViewModel x:Name="ViewModel"></viewModels:ColorPickerViewModel>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Slider.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <viewModels:ThemesViewModel x:Key="ThemesViewModel"></viewModels:ThemesViewModel>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ToolBarTray>
+            <ToolBar>
+                <Button VerticalContentAlignment="Center" Command="{Binding OpenCommand}" CommandParameter="{Binding ElementName=Image}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="File" VerticalAlignment="Center"></materialDesign:PackIcon>
+                        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Open</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button VerticalContentAlignment="Center" Command="{Binding PasteCommand}" CommandParameter="{Binding ElementName=Image}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentPaste" VerticalAlignment="Center"></materialDesign:PackIcon>
+                        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Paste</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Click="ScreenShotButton_OnClick" VerticalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Tab" VerticalAlignment="Center"></materialDesign:PackIcon>
+                        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Take Screenshot</TextBlock>
+                    </StackPanel>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Visibility="{Binding ImageNotOpened, Converter={StaticResource BooleanToVisibilityConverter}}">No Image Opened</TextBlock>
+        <Border Grid.Row="1" ClipToBounds="True" x:Name="Border">
+            <Image x:Name="Image" Stretch="Uniform" MouseWheel="Image_OnMouseWheel" RenderTransformOrigin="0.5,0.5" MouseLeftButtonDown="Image_MouseLeftButtonDown" MouseMove="Image_MouseMove" MouseLeftButtonUp="Image_MouseLeftButtonUp" MouseRightButtonDown="Image_MouseRightButtonDown">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+        </Border>
+        <StatusBar Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Margin="10,3">
+                <TextBlock VerticalAlignment="Center">Zoom</TextBlock>
+                <Slider VerticalAlignment="Center" Style="{StaticResource MaterialDesignSlider}" Width="200" Margin="20,0,0,0" Value="{Binding Zoom, UpdateSourceTrigger=PropertyChanged}" Minimum="50" Maximum="1500"></Slider>
+                <TextBox materialDesign:ValidationAssist.UsePopup="True" VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding Zoom, StringFormat={}%{0}}" GotFocus="TextBox_GotFocus"/>
+            </StackPanel>
+            <Separator></Separator>
+            <Rectangle Width="24" Height="24" Margin="10,0">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{Binding Color, Mode=TwoWay}"></SolidColorBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <TextBox ToolTip="Click to copy to the clipboard."  ToolTipService.Placement="Top" PreviewMouseLeftButtonDown="ColorText_LeftMouseButtonDown" IsReadOnly="True" Margin="0,0,10,0" Text="{Binding Color}"></TextBox>
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="FavoriteButton" IsEnabled="{Binding ColorSelected}" Command="{Binding AddToFavoritesCommand}" CommandParameter="{Binding Color}" >Mark as Favorite Color</Button>
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding AddToThemesCommand}" CommandParameter="{Binding ElementName=ThemesComboBox,Path=SelectedItem}" IsEnabled="{Binding ColorSelected}" x:Name="AddToThemeButton">Add To Theme:</Button>
+                <ComboBox x:Name="ThemesComboBox" ItemsSource="{Binding ElementName=Root,Path=Resources[ThemesViewModel].Themes}"></ComboBox>
+            </StackPanel>
+        </StatusBar>
+    </Grid>
+</UserControl>
