@@ -9,6 +9,8 @@ Features:
 - Screenshot or Image Mode
 
 ## Screenshots
-![Color Picker][Screenshots/Picker.PNG?raw=true]
-![Color History][Screenshots/History.PNG?raw=true]
-![Themes][Screenshots/Theme.PNG?raw=true]
+![Color Picker](Screenshots/Picker.PNG?raw=true)
+
+![Color History](Screenshots/History.PNG?raw=true)
+
+![Themes](Screenshots/Theme.PNG?raw=true)
